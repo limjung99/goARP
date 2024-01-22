@@ -1,29 +1,50 @@
 package main
 
-import (
-	"fmt"
-	"os"
+/*
+	First golang programming
+	for studying network and golang
+*/
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/pcap"
+import (
+	"flag"
+	"fmt"
+	"runtime"
 )
 
-func handlePacket(packet gopacket.Packet) {
-	/*
-		TODO : something handling capturing packets
-	*/
+func defaultInterface() string {
+	switch runtime.GOOS {
+	case "darwin":
+		return "en0"
+	case "windows":
+		return "Ethernet"
+	case "linux":
+		return "ens33"
+	}
+	return "eth0"
 }
 
+var (
+	flagInterface  = flag.String("i",defaultInterface(),"NetworkInterface")
+	flagHelp 	= flag.String("h","help","Help and describe what program it is.")
+)
+
+	
+
+
 func main() {
-	fmt.Println(os.Args[1])
-	if handle, err := pcap.OpenLive(os.Args[1], 1600, true, pcap.BlockForever); err != nil {
-		panic(err)
-	} else if err := handle.SetBPFFilter("tcp and port 80"); err != nil { // optional
-		panic(err)
-	} else {
-		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-		for packet := range packetSource.Packets() {
-			handlePacket(packet) // Do something with a packet here.
-		}
+	flag.Parse()
+	
+	if flagHelp != nil {
+		fmt.Println("Program for ARP spoof in your local net.")
+		fmt.Println("")
+		fmt.Println("You can spoof other devices on local net.")
+		fmt.Println("")
+		fmt.Println("You could punished if you use this program,,,")
+		fmt.Println("Be careful")
+		fmt.Println("You can define NIC via -i flag")
 	}
+
+	/*
+		TODO
+	*/
 }
