@@ -7,6 +7,9 @@ import (
 	"net"
 	"os"
 	"runtime"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/pcap"
 )
 
 func defaultInterface() string {
@@ -66,5 +69,20 @@ func main() {
 			4. Spoof gateway
 			5. If possible , relay packets in local network.
 	*/
+
+	handle , err := pcap.OpenLive(*flagInterface,1600,true,pcap.BlockForever)
+	if err != nil {
+		panic(err)
+	}
+
+	// lazy resource return
+	defer handle.Close()
+
+	packetSource := gopacket.NewPacketSource(handle,handle.LinkType())
+
+	for packet := range packetSource.Packets() {
+		fmt.Println("packet:",packet)
+	}
+
 
 }
